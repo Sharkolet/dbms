@@ -1,19 +1,14 @@
 package ua.shark.dbms.entities;
 
 import java.io.Serializable;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.List;
 
 public class Database implements Serializable {
-	/**
-	 * 
-	 */
+	
 	private static final long serialVersionUID = -4373584817640249387L;
 	
 	private String name;
-	private SimpleDateFormat date;
-	private List<Table> tables;
+	private ArrayList<Table> tables;
 	
 	public Database(String name) {
 		this.name = name;
@@ -26,14 +21,6 @@ public class Database implements Serializable {
 
 	public void setName(String name) {
 		this.name = name;
-	}
-	
-	public SimpleDateFormat getDate() {
-		return date;
-	}
-	
-	public void setDate(SimpleDateFormat date) {
-		this.date = date;
 	}
 	
 	public void addTable(Table table) {
@@ -58,7 +45,7 @@ public class Database implements Serializable {
 		return false;
 	}
 	
-	public List<Table> getTableList() {
+	public ArrayList<Table> getTableList() {
 		return tables;
 	}
 	

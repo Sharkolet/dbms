@@ -4,11 +4,11 @@ import java.io.Serializable;
 
 public class Attribute implements Serializable{
 	private String name;
-	private Type type;
+	private Class clazz;
 	
-	public Attribute(String name, Type type) {
+	public Attribute(String name, Class clazz) {
 		this.name = name;
-		this.type = type;
+		this.clazz = clazz;
 	}
 
 	public String getName() {
@@ -19,8 +19,8 @@ public class Attribute implements Serializable{
 		this.name = name;
 	}
 
-	public Type getType() {
-		return type;
+	public Class getClazz() {
+		return clazz;
 	}
 
 	@Override
@@ -33,7 +33,7 @@ public class Attribute implements Serializable{
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		result = prime * result + ((type == null) ? 0 : type.hashCode());
+		result = prime * result + ((clazz == null) ? 0 : clazz.hashCode());
 		return result;
 	}
 
@@ -51,7 +51,7 @@ public class Attribute implements Serializable{
 				return false;
 		} else if (!name.equals(other.name))
 			return false;
-		if (type != other.type)
+		if (clazz != other.clazz)
 			return false;
 		return true;
 	}

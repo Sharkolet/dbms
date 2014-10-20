@@ -5,10 +5,9 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
-
-import java.awt.Font;
-
+import javax.swing.ListSelectionModel;
 import javax.swing.DefaultListModel;
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JList;
@@ -16,8 +15,9 @@ import javax.swing.JButton;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-
-import javax.swing.ListSelectionModel;
+import java.awt.Font;
+import java.io.EOFException;
+import java.io.IOException;
 
 import ua.shark.dbms.entities.DBManager;
 import ua.shark.dbms.entities.Database;
@@ -31,9 +31,6 @@ public class MainForm extends JFrame {
 	private JList<String> list;
 	private DefaultListModel<String> model;
 
-	/**
-	 * Create the frame.
-	 */
 	public MainForm() {
 		setTitle("DBMS");
 		setResizable(false);
@@ -55,7 +52,7 @@ public class MainForm extends JFrame {
 		lblCreateDb.setBounds(55, 111, 100, 14);
 		contentPane.add(lblCreateDb);
 		
-		JLabel lblNewLabel = new JLabel("Load DB");
+		JLabel lblNewLabel = new JLabel("DB List");
 		lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 16));
 		lblNewLabel.setBounds(55, 150, 85, 14);
 		contentPane.add(lblNewLabel);
@@ -78,6 +75,7 @@ public class MainForm extends JFrame {
 				if (txtName.getText() != null && !txtName.getText().isEmpty() && !txtName.getText().trim().equals("")) {
 					for (int i = 0; i < model.getSize(); ++i) {
 						if (model.get(i).equals(txtName.getText())) {
+							txtName.setText("");
 							txtName.requestFocus();
 							return;
 						}
@@ -86,6 +84,7 @@ public class MainForm extends JFrame {
 					dispose();
 					new TablesForm();
 				}
+				txtName.setText("");
 				txtName.requestFocus();
 			}
 		});
@@ -95,7 +94,17 @@ public class MainForm extends JFrame {
 		JButton btnLoad = new JButton("Load");
 		btnLoad.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				
+				try {
+					manager.loadDB(list.getSelectedValue());
+					dispose();
+					new TablesForm();
+				} catch (ClassNotFoundException e1) {
+					e1.printStackTrace();
+				} catch (IOException e1) {
+					JOptionPane.showMessageDialog(null, "This file is corrupted!",
+							"File corrupted!",
+							JOptionPane.ERROR_MESSAGE);
+				}
 			}
 		});
 		btnLoad.setBounds(369, 150, 89, 23);
@@ -114,5 +123,21 @@ public class MainForm extends JFrame {
 		}
 		scrollPane.setViewportView(list);
 		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		list.setSelectedIndex(0);
+		
+		
+		
+		JButton btnDelete = new JButton("Delete");
+		btnDelete.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				manager.deleteDB(list.getSelectedValue());
+				model.remove(list.getSelectedIndex());
+				list.setModel(model);
+				list.setSelectedIndex(0);
+			}
+		});
+		btnDelete.setBounds(369, 184, 89, 23);
+		contentPane.add(btnDelete);
+		setVisible(true);
 	}
 }

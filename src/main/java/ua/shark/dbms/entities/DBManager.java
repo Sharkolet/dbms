@@ -15,7 +15,6 @@ public class DBManager {
 		ArrayList<String> lst = new ArrayList<String>();
 		File[] fList;        
 		File f = new File("src/main/resources");
-		//System.out.println(f.getAbsolutePath());
 		fList = f.listFiles();
 		                
 		for(int i = 0; i < fList.length; i++) {
@@ -23,7 +22,6 @@ public class DBManager {
 		    	 lst.add(fList[i].getName().substring(0, fList[i].getName().length() - 5));
 		     }
 		}
-		
 		return lst;
 	}
 	
@@ -36,7 +34,7 @@ public class DBManager {
 	}
 	
 	public void saveDB() throws IOException {
-		FileOutputStream fos = new FileOutputStream(curDB.getName() + ".mydb");
+		FileOutputStream fos = new FileOutputStream("src/main/resources/" + curDB.getName() + ".mydb");
 		ObjectOutputStream oos = new ObjectOutputStream(fos);
 		oos.writeObject(curDB);
 		oos.flush();
@@ -44,9 +42,14 @@ public class DBManager {
 	}
 	
 	public void loadDB(String name) throws IOException, ClassNotFoundException {
-		FileInputStream fis = new FileInputStream(name);
+		FileInputStream fis = new FileInputStream("src/main/resources/" + name + ".mydb");
 		ObjectInputStream oin = new ObjectInputStream(fis);
 		curDB = (Database) oin.readObject();
 		oin.close();
+	}
+	
+	public void deleteDB(String name) {
+		File f = new File("src/main/resources/" + name + ".mydb");
+		f.delete();
 	}
 }

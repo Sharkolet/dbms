@@ -2,23 +2,22 @@ package ua.shark.dbms.entities;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.List;
 
 public class Table implements Serializable {
 	private String name;
-	private List<Attribute> header;
-	private List<Record> records;
+	private ArrayList<Attribute> header;
+	private ArrayList<Record> records;
 
-	public Table(String name, List<Attribute> header) {
+	/*public Table(String name, ArrayList<Attribute> header) {
 		this.name = name;
 		this.header = header;
 		records = new ArrayList<Record>();
-	}
+	}*/
 
 	public Table(String name) {
 		this.name = name;
 		this.header = new ArrayList<Attribute>();
-		records = new ArrayList<Record>();
+		this.records = new ArrayList<Record>();
 	}
 
 	public String getName() {
@@ -29,7 +28,7 @@ public class Table implements Serializable {
 		this.name = name;
 	}
 
-	public List<Attribute> getHeader() {
+	public ArrayList<Attribute> getHeader() {
 		return header;
 	}
 
@@ -41,16 +40,16 @@ public class Table implements Serializable {
 		for (int i = 0; i < header.size(); ++i) {
 			if (header.get(i).getName().equals(name)) {
 				header.remove(i);
-				for (int j = 0; j < records.size(); j++) {
+				/*for (int j = 0; j < records.size(); j++) {
 					records.get(j).delValue(i);
-				}
+				}*/
 				return true;
 			}
 		}
 		return false;
 	}
 
-	public boolean renameAttribute(String whatName, String forName) {
+	/*public boolean renameAttribute(String whatName, String forName) {
 		for (int i = 0; i < header.size(); ++i) {
 			if (header.get(i).equals(whatName)) {
 				header.get(i).setName(forName);
@@ -58,13 +57,13 @@ public class Table implements Serializable {
 			}
 		}
 		return false;
-	}
+	}*/
 
-	public List<Record> getRecords() {
+	public ArrayList<Record> getRecords() {
 		return records;
 	}
 
-	public void setRecords(List<Record> records) {
+	public void setRecords(ArrayList<Record> records) {
 		this.records = records;
 	}
 
@@ -72,25 +71,46 @@ public class Table implements Serializable {
 		if (header.size() != rec.getValueList().size()) {
 			return false;
 		}
-		for (int i = 0; i < header.size(); i++) {
-			if (header.get(i).getType() != rec.getValue(i).getType())
+		/*for (int i = 0; i < header.size(); i++) {
+			if (header.get(i).getClazz() != rec.getValue(i).getClazz())
 				return false;
-		}
+		}*/
 		records.add(rec);
 		return true;
 	}
 	
-	// TODO we need to add implementating id
+	public String[] getColumnNames() {
+		ArrayList<String> names = new ArrayList<String>();
+		for (Attribute attr : header) {
+			names.add(attr.getName());
+		}
+		String[] res = new String[names.size()];
+		names.toArray(res);
+		return res;
+	}
+	
+	public Object[][] getRecordsAsArray() {
+		Object[][] result = new Object[records.size()][header.size()];
+		for (int i = 0; i < records.size(); i++) {
+			Record rec = records.get(i);
+			ArrayList<Object> values = rec.getValueList();
+			for (int j = 0; j < header.size(); j++) {
+				result[i][j] = values.get(j);
+			}
+		}
+		return result;
+	}
+	
 	public void delRecord(int id) { 
 		records.remove(id);
 	}
 	
-	public Table joinTables(Table b, int indexA, int indexB) { 
+	public Table joinTables(Table b, Integer indexA, Integer indexB) { 
 		if (this == null || b == null)
 			return null;
 		if (this.getHeader().size() < (indexA + 1) || b.getHeader().size() < (indexB + 1))
 			return null;
-		if (this.getHeader().get(indexA).getType() != b.getHeader().get(indexB).getType()) {
+		if (this.getHeader().get(indexA).getClazz() != b.getHeader().get(indexB).getClazz()) {
 			return null;
 		}
 		Table res = new Table("Joining result");
@@ -107,7 +127,6 @@ public class Table implements Serializable {
 						Record rec = new Record();
 						rec.getValueList().addAll(this.getRecords().get(i).getValueList());
 						rec.getValueList().addAll(b.getRecords().get(j).getValueList());
-						System.out.println("res " + rec);
 						res.addRecord(rec);
 					}
 			}
@@ -123,15 +142,15 @@ public class Table implements Serializable {
 		if (this.getHeader().size() != b.getHeader().size())
 			return null;
 		for (int i = 0; i < this.getHeader().size(); i++) {
-			if (this.getHeader().get(i).getType() != b.getHeader().get(i).getType())
+			if (!this.getHeader().get(i).getClazz().equals(b.getHeader().get(i).getClazz()))
 				return null;
 		}
 		for (int i = 0; i < this.getHeader().size(); i++) {
-			res.addAttribute(new Attribute(this.getHeader().get(i).getName(), this.getHeader().get(i).getType()));
+			res.addAttribute(new Attribute(this.getHeader().get(i).getName(), this.getHeader().get(i).getClazz()));
 		}
 		for (int i = 0; i < this.getRecords().size(); i++) {
 			for (int j = 0; j < b.getRecords().size(); j++) {
-				if (this.getRecords().get(i).equals(b.getRecords().get(i)))
+				if (this.getRecords().get(i).equals(b.getRecords().get(j)))
 					res.addRecord(this.getRecords().get(i));
 			}
 		}

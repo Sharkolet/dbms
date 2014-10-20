@@ -2,20 +2,40 @@ package ua.shark.dbms.entities;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.List;
+
+import ua.shark.dbms.types.RealInterval;
 
 public class Record implements Serializable {
-	private List<Value> values;
+	private ArrayList<Object> values = new ArrayList<Object>();
 	
 	public Record() {
-		values = new ArrayList<Value>();
+		values = new ArrayList<Object>();
 	}
 	
-	public Record(List<Value> values) {
+	public Record(ArrayList<Object> values) {
 		this.values = values;
 	}
 	
-	public void addValue(Value val) {
+	public Record(String[] str, ArrayList<Attribute> header) {
+		if (str.length != header.size())
+			throw new NumberFormatException();
+		for (int i = 0; i < str.length; ++i) {
+			Class clazz = header.get(i).getClazz();
+			if (clazz.equals(Integer.class)) {
+				values.add(new Integer(Integer.parseInt(str[i])));
+			} else if (clazz.equals(Double.class)) {
+				values.add(new Double(Double.parseDouble(str[i])));
+			} else if (clazz.equals(Long.class)) {
+				values.add(new Long(Long.parseLong(str[i])));
+			} else if (clazz.equals(String.class)) {
+				values.add(new String(str[i]));
+			} else if (clazz.equals(RealInterval.class)) {
+				values.add(new RealInterval(str[i]));
+			}
+		}
+	}
+	
+	/*public void addValue(Object val) {
 		values.add(val);
 	}
 	
@@ -33,13 +53,13 @@ public class Record implements Serializable {
 			return true;
 		}
 		return false;
-	}
+	}*/
 	
-	public List<Value> getValueList() {
+	public ArrayList<Object> getValueList() {
 		return values;
 	}
 	
-	public Value getValue(int i) {
+	public Object getValue(int i) {
 		return values.get(i);
 	}
 	
